@@ -13,7 +13,10 @@ bind_zones:
 # List of acls.
 bind_acls: []
 
-# Key binding for secondary servers
+# Bind Key to allow zone dynamic updates by Ansible in HMAC-MD5 format.
+# See README.md on how to generate a new key for production environments.
+bind_key_ansible: "0UyV6UESCh+F+5Xg0AVYHg=="
+
 bind_dns_keys: []
 #  - name: primary_key
 #    algorithm: hmac-sha256

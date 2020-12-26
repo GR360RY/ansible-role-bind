@@ -59,6 +59,7 @@ The packages `python-netaddr` (required for the [`ipaddr`](https://docs.ansible.
 | `bind_statistics_host`      | `127.0.0.1`          | IP address of the network interface that the statistics service should listen on                                                     |
 | `bind_statistics_port`      | 8053                 | Network port that the statistics service should listen on                                                                            |
 | `bind_zone_dir`             | -                    | When defined, sets a custom absolute path to the server directory (for zone files, etc.) instead of the default.                     |
+| `bind_key_ansible`          | `0UyV6UESCh+F+5Xg0AVYHg==` | Bind key to allow zone dynamic updates by Ansible. See "Bind Keys" on how to generate a new key for production environments    |
 | `bind_key_mapping`          | []                   | `Primary: Keyname` - mapping of TSIG keys to use for a specific primary                                                              |
 | `bind_zones`                | n/a                  | A list of mappings with zone definitions. See below this table for examples                                                          |
 | `- allow_update`            | `['none']`           | A list of hosts that are allowed to dynamically update this DNS zone.                                                                |
