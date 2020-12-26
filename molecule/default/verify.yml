@@ -103,3 +103,113 @@
         that:
           - lookup('dig', '_kerberos.acme-inc.com/TXT', local_dns) == 'KERBEROS.ACME-INC.COM'
           - lookup('dig', 'acme-inc.com/TXT', local_dns).split(',') | sort | join(',') == 'more text,some text'
+
+    - name: "Add A Type Record with DYNDNS on Primary"
+      nsupdate:
+        key_name: "ansible"
+        key_secret: "{{ bind_key_ansible }}"
+        server: 10.11.0.1
+        zone: "acme-inc.com"
+        record: "dyndns-test01"
+        value: "10.11.3.10"
+        ttl: 1209600
+        state: present
+      run_once: true
+
+    - name: "Add IPV4 PTR Type Record with DYNDNS on Primary"
+      nsupdate:
+        key_name: "ansible"
+        key_secret: "{{ bind_key_ansible }}"
+        server: 10.11.0.1
+        record: "10.3.11.10.in-addr.arpa."
+        type: "PTR"
+        value: "dyndns-test01.acme-inc.com."
+        ttl: 1209600
+        state: present
+      run_once: true
+
+    - name: "Add AAAA Type Record with DYNDNS on Primary"
+      nsupdate:
+        key_name: "ansible"
+        key_secret: "{{ bind_key_ansible }}"
+        server: 10.11.0.1
+        zone: "acme-inc.com"
+        record: "dyndns-test03"
+        value: "2001:db8::d:4"
+        type: "AAAA"
+        ttl: 1209600
+        state: present
+      run_once: true
+
+    - name: "Add IPV6 PTR Type Record with DYNDNS on Primary"
+      nsupdate:
+        key_name: "ansible"
+        key_secret: "{{ bind_key_ansible }}"
+        server: 10.11.0.1
+        record: "4.0.0.0.d.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa."
+        type: "PTR"
+        value: "dyndns-test03.acme-inc.com."
+        ttl: 1209600
+        state: present
+      run_once: true
+
+    - name: "Add A Type Record with DYNDNS on Secondary"
+      nsupdate:
+        key_name: "ansible"
+        key_secret: "{{ bind_key_ansible }}"
+        server: 10.11.0.2
+        zone: "acme-inc.com"
+        record: "dyndns-test02"
+        value: "10.11.3.11"
+        ttl: 1209600
+        state: present
+      run_once: true
+
+    - name: "Add IPV4 PTR Type Record with DYNDNS on Secondary"
+      nsupdate:
+        key_name: "ansible"
+        key_secret: "{{ bind_key_ansible }}"
+        server: 10.11.0.2
+        record: "11.3.11.10.in-addr.arpa."
+        type: "PTR"
+        value: "dyndns-test02.acme-inc.com."
+        ttl: 1209600
+        state: present
+      run_once: true
+
+    - name: "Add AAAA Type Record with DYNDNS on Secondary"
+      nsupdate:
+        key_name: "ansible"
+        key_secret: "{{ bind_key_ansible }}"
+        server: 10.11.0.2
+        zone: "acme-inc.com"
+        record: "dyndns-test04"
+        value: "2001:db8::d:5"
+        type: "AAAA"
+        ttl: 1209600
+        state: present
+      run_once: true
+
+    - name: "Add IPV6 PTR Type Record with DYNDNS on Secondary"
+      nsupdate:
+        key_name: "ansible"
+        key_secret: "{{ bind_key_ansible }}"
+        server: 10.11.0.1
+        record: "5.0.0.0.d.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa."
+        type: "PTR"
+        value: "dyndns-test04.acme-inc.com."
+        ttl: 1209600
+        state: present
+      run_once: true
+
+    - name: Assert Dynamic Records
+      assert:
+        that:
+          - lookup('dig', 'dyndns-test01.acme-inc.com', local_dns ) == '10.11.3.10'
+          - lookup('dig', 'dyndns-test02.acme-inc.com', local_dns ) == '10.11.3.11'
+          - lookup('dig', 'dyndns-test03.acme-inc.com/AAAA', local_dns ) == '2001:db8::d:4'
+          - lookup('dig', 'dyndns-test04.acme-inc.com/AAAA', local_dns ) == '2001:db8::d:5'
+          - lookup('dig', '10.11.3.10/PTR', local_dns) == 'dyndns-test01.acme-inc.com.'
+          - lookup('dig', '10.11.3.11/PTR', local_dns) == 'dyndns-test02.acme-inc.com.'
+          - lookup('dig', '2001:db8::d:4/PTR', local_dns) == 'dyndns-test03.acme-inc.com.'
+          - lookup('dig', '2001:db8::d:5/PTR', local_dns) == 'dyndns-test04.acme-inc.com.'
